@@ -162,6 +162,7 @@ body{
     <a href="add_product.php">➕ Add Product</a>
     <a href="edit_products.php">✏ Edit Products</a>
     <a href="manage_orders.php">📦 Manage Orders</a>
+    <a href="manage_products.php">📦 Manage Products</a>
     <a href="../index.php">🏠 View Website</a>
     <a href="logout.php">🚪 Logout</a>
 

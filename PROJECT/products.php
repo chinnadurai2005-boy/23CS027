@@ -6,22 +6,25 @@ include("includes/header.php");
 /* =========================
    ADD TO CART FUNCTIONALITY
 ========================= */
+if(isset($_POST['add_to_cart']) && isset($_POST['product_id'])){
 
-if(isset($_POST['add_to_cart'])){
     $id = intval($_POST['product_id']);
 
-    if(!isset($_SESSION['cart'])){
-        $_SESSION['cart'] = array();
-    }
+    if($id > 0){
 
-    if(isset($_SESSION['cart'][$id])){
-        $_SESSION['cart'][$id] += 1;
-    } else {
-        $_SESSION['cart'][$id] = 1;
-    }
+        if(!isset($_SESSION['cart']) || !is_array($_SESSION['cart'])){
+            $_SESSION['cart'] = array();
+        }
 
-    header("Location: cart.php");
-    exit();
+        if(array_key_exists($id, $_SESSION['cart'])){
+            $_SESSION['cart'][$id] = $_SESSION['cart'][$id] + 1;
+        } else {
+            $_SESSION['cart'][$id] = 1;
+        }
+
+        echo "<script>window.location='cart.php';</script>";
+        exit();
+    }
 }
 
 /* =========================
