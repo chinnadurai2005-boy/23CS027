@@ -2,141 +2,90 @@
 session_start();
 include("../includes/db_connect.php");
 
-/* OPTIONAL ADMIN LOGIN CHECK */
-/*
-if(!isset($_SESSION['admin'])){
-    header("Location: admin_login.php");
+// Check if product ID exists
+if(!isset($_GET['id'])){
+    echo "Invalid Product ID";
     exit();
 }
-*/
 
-/* GET PRODUCT ID */
-if(!isset($_GET['id'])){
-    die("Product ID Missing");
-}
+$id = intval($_GET['id']);
 
-$id = $_GET['id'];
-
-/* FETCH PRODUCT */
+// Fetch product details
 $result = mysqli_query($conn, "SELECT * FROM products WHERE id='$id'");
 $product = mysqli_fetch_assoc($result);
 
 if(!$product){
-    die("Product Not Found");
+    echo "Product not found";
+    exit();
 }
 
-/* UPDATE PRODUCT */
-if(isset($_POST['update'])){
+// UPDATE PRODUCT
+if(isset($_POST['update_product'])){
 
-    $name     = $_POST['name'];
-    $price    = $_POST['price'];
-    $category = $_POST['category'];
+    $name = mysqli_real_escape_string($conn, $_POST['name']);
+    $price = mysqli_real_escape_string($conn, $_POST['price']);
+    $category = mysqli_real_escape_string($conn, $_POST['category']);
+    $description = mysqli_real_escape_string($conn, $_POST['description']);
 
-    $image_name = $_FILES['image']['name'];
-    $tmp_name   = $_FILES['image']['tmp_name'];
+    // Image upload (optional)
+    $image = $product['image'];
 
-    /* IMAGE UPDATE */
-    if($image_name!=""){
-
-        $new_name = time()."_".$image_name;
-        move_uploaded_file($tmp_name,"../uploads/product_images/".$new_name);
-
-        mysqli_query($conn,"
-            UPDATE products 
-            SET name='$name', price='$price', category='$category', image='$new_name'
-            WHERE id='$id'
-        ");
-
-    } else {
-
-        mysqli_query($conn,"
-            UPDATE products 
-            SET name='$name', price='$price', category='$category'
-            WHERE id='$id'
-        ");
+    if(!empty($_FILES['image']['name'])){
+        $image = $_FILES['image']['name'];
+        move_uploaded_file($_FILES['image']['tmp_name'], "../uploads/product_images/".$image);
     }
 
-    echo "<script>alert('Product Updated Successfully');</script>";
-    echo "<script>window.location='manage_products.php';</script>";
+    $update = mysqli_query($conn,
+        "UPDATE products SET 
+        name='$name',
+        price='$price',
+        category='$category',
+        description='$description',
+        image='$image'
+        WHERE id='$id'"
+    );
+
+    if($update){
+        echo "<script>alert('Product Updated Successfully');</script>";
+        echo "<script>window.location='manage_products.php';</script>";
+    } else {
+        echo "Update Failed: " . mysqli_error($conn);
+    }
 }
 ?>
 
 <!DOCTYPE html>
 <html>
 <head>
-<title>Edit Product</title>
-
-<style>
-.form-box{
-    width:350px;
-    margin:50px auto;
-    padding:20px;
-    background:#ffffff;
-    border:1px solid #ccc;
-    box-shadow:0px 0px 10px #ccc;
-}
-
-input, select{
-    width:100%;
-    padding:10px;
-    margin-bottom:12px;
-}
-
-button{
-    width:100%;
-    padding:10px;
-    background:green;
-    color:white;
-    border:none;
-    font-size:16px;
-    cursor:pointer;
-}
-
-button:hover{
-    background:darkgreen;
-}
-
-img{
-    width:80px;
-    margin-bottom:10px;
-}
-</style>
+    <title>Edit Product</title>
 </head>
-
 <body>
 
-<div class="form-box">
-
-<h2 align="center">Edit Product</h2>
+<h2>Edit Product</h2>
 
 <form method="post" enctype="multipart/form-data">
 
-<input type="text" name="name"
-       value="<?php echo $product['name']; ?>" required>
+    <label>Product Name:</label><br>
+    <input type="text" name="name" value="<?php echo $product['name']; ?>" required><br><br>
 
-<input type="number" name="price"
-       value="<?php echo $product['price']; ?>" required>
+    <label>Price:</label><br>
+    <input type="text" name="price" value="<?php echo $product['price']; ?>" required><br><br>
 
-<select name="category" required>
-    <option value="Dairy" <?php if($product['category']=="Dairy") echo "selected"; ?>>Dairy</option>
-    <option value="Fruits" <?php if($product['category']=="Fruits") echo "selected"; ?>>Fruits</option>
-    <option value="Vegetables" <?php if($product['category']=="Vegetables") echo "selected"; ?>>Vegetables</option>
-</select>
+    <label>Category:</label><br>
+    <input type="text" name="category" value="<?php echo $product['category']; ?>" required><br><br>
 
-<!-- CURRENT IMAGE -->
-<?php if($product['image']!=""){ ?>
-    <center>
-        <img src="../uploads/product_images/<?php echo $product['image']; ?>">
-    </center>
-<?php } ?>
+    <label>Description:</label><br>
+    <textarea name="description" required><?php echo $product['description']; ?></textarea><br><br>
 
-<input type="file" name="image">
+    <label>Current Image:</label><br>
+    <img src="../uploads/product_images/<?php echo $product['image']; ?>" width="100"><br><br>
 
-<button type="submit" name="update">Update Product</button>
+    <label>Change Image:</label><br>
+    <input type="file" name="image"><br><br>
+
+    <button type="submit" name="update_product">Update Product</button>
 
 </form>
-
-</div>
 
 </body>
 </html>
