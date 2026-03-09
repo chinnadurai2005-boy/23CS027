@@ -190,6 +190,21 @@ button:hover{
 <input type="text" name="city" placeholder="City" required>
 
 <input type="text" name="mobile" placeholder="Mobile Number" required>
+<h3>Select Payment Method</h3>
+
+<label>
+<input type="radio" name="payment_method" value="UPI" required>
+UPI Payment
+</label>
+
+<br><br>
+
+<label>
+<input type="radio" name="payment_method" value="COD">
+Cash on Delivery
+</label>
+
+<br><br>
 
 <button type="submit" name="place_order">
 Place Order

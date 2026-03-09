@@ -10,12 +10,15 @@ if(!isset($_GET['order_id'])){
 
 $order_id = intval($_GET['order_id']);
 
-/* FETCH ORDER + USER */
-$sql = "SELECT orders.*, 
-        users.name, users.email, users.phone, users.address
-        FROM orders
-        JOIN users ON orders.user_id = users.id
-        WHERE orders.id='$order_id'";
+/* FETCH ORDER + SHIPPING DETAILS */
+$sql = "SELECT o.*, 
+        s.fullname,
+        s.address,
+        s.city,
+        s.mobile
+        FROM orders o
+        LEFT JOIN shipping s ON o.id = s.order_id
+        WHERE o.id='$order_id'";
 
 $order_q = mysqli_query($conn,$sql);
 
@@ -108,9 +111,9 @@ th,td{
 <b>Order ID:</b> <?php echo htmlspecialchars($order['id']); ?><br>
 <b>Order Date:</b> <?php echo htmlspecialchars($order['order_date']); ?><br><br>
 
-<b>Customer Name:</b> <?php echo htmlspecialchars($order['name']); ?><br>
-<b>Email:</b> <?php echo htmlspecialchars($order['email']); ?><br>
-<b>Phone:</b> <?php echo htmlspecialchars($order['phone']); ?><br>
+<b>Customer Name:</b> <?php echo htmlspecialchars($order['fullname']); ?><br>
+<b>Phone:</b> <?php echo htmlspecialchars($order['mobile']); ?><br>
+<b>City:</b> <?php echo htmlspecialchars($order['city']); ?><br>
 <b>Address:</b> <?php echo htmlspecialchars($order['address']); ?><br>
 
 <table>
