@@ -51,3 +51,18 @@ CREATE TABLE admin (
 
 UPDATE orders SET status='Confirmed' WHERE status='confirmed';
 UPDATE orders SET status='Pending' WHERE status='pending';
+
+
+CREATE TABLE shipping (
+id INT AUTO_INCREMENT PRIMARY KEY,
+order_id INT,
+fullname VARCHAR(100),
+address TEXT,
+city VARCHAR(100),
+mobile VARCHAR(20)
+);
+
+ALTER TABLE orders ADD status VARCHAR(20) DEFAULT 'Pending';
+
+ALTER TABLE orders 
+ADD status VARCHAR(20) DEFAULT 'Pending';

@@ -172,6 +172,7 @@ table{
 <th>Total Amount</th>
 <th>Order Date</th>
 <th>Status</th>
+<th>Action</th>
 <th>Bill</th>
 </tr>
 
@@ -181,6 +182,33 @@ table{
 <td>₹<?php echo number_format($row['total_amount'],2); ?></td>
 <td><?php echo $row['order_date']; ?></td>
 <td><?php echo $row['status']; ?></td>
+<td>
+<?php
+if(isset($row['status']) && $row['status'] == 'Pending'){
+?>
+
+<a href="cancel_order.php?order_id=<?php echo (int)$row['id']; ?>"
+onclick="return confirm('Are you sure you want to cancel this order?');"
+style="color:red;font-weight:bold;">
+Cancel Order
+</a>
+
+<?php
+}else{
+
+    if($row['status'] == 'Cancelled'){
+        echo "<span style='color:red;'>Cancelled</span>";
+    }
+    else if($row['status'] == 'Confirmed'){
+        echo "<span style='color:lime;'>Confirmed</span>";
+    }
+    else{
+        echo htmlspecialchars($row['status']);
+    }
+
+}
+?>
+</td>
 <td>
 <a href="../bill.php?order_id=<?php echo $row['id']; ?>" target="_blank">
 View Bill

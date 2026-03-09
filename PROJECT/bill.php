@@ -11,13 +11,18 @@ if(!isset($_GET['order_id'])){
 $order_id = intval($_GET['order_id']);
 
 /* FETCH ORDER + USER */
-$order_q = mysqli_query($conn,"
-SELECT orders.*, 
-users.name, users.email, users.phone, users.address
-FROM orders
-JOIN users ON orders.user_id = users.id
-WHERE orders.id='$order_id'
-");
+$sql = "SELECT orders.*, 
+        users.name, users.email, users.phone, users.address
+        FROM orders
+        JOIN users ON orders.user_id = users.id
+        WHERE orders.id='$order_id'";
+
+$order_q = mysqli_query($conn,$sql);
+
+if(!$order_q){
+    echo "Database Error!";
+    exit();
+}
 
 $order = mysqli_fetch_assoc($order_q);
 
@@ -27,12 +32,17 @@ if(!$order){
 }
 
 /* FETCH ORDER ITEMS */
-$item_q = mysqli_query($conn,"
-SELECT oi.*, p.name AS product_name
-FROM order_items oi
-JOIN products p ON oi.product_id=p.id
-WHERE oi.order_id='$order_id'
-");
+$item_sql = "SELECT oi.*, p.name AS product_name
+             FROM order_items oi
+             JOIN products p ON oi.product_id = p.id
+             WHERE oi.order_id='$order_id'";
+
+$item_q = mysqli_query($conn,$item_sql);
+
+if(!$item_q){
+    echo "Items Fetch Error!";
+    exit();
+}
 ?>
 
 <!DOCTYPE html>
@@ -41,33 +51,45 @@ WHERE oi.order_id='$order_id'
 <title>Invoice</title>
 
 <style>
+body{
+    font-family: Arial;
+}
+
 .bill-box{
     width:75%;
     margin:auto;
     border:1px solid black;
     padding:20px;
 }
+
 .bill-header{
     text-align:center;
 }
+
 table{
     width:100%;
     border-collapse:collapse;
     margin-top:20px;
 }
+
 table,th,td{
     border:1px solid black;
 }
+
 th,td{
     padding:8px;
     text-align:center;
 }
+
 .print-btn{
     text-align:center;
     margin-top:20px;
 }
+
 @media print{
-    .print-btn{display:none;}
+    .print-btn{
+        display:none;
+    }
 }
 </style>
 </head>
@@ -83,15 +105,16 @@ th,td{
 
 <br>
 
-<b>Order ID:</b> <?php echo $order['id']; ?><br>
-<b>Order Date:</b> <?php echo $order['order_date']; ?><br><br>
+<b>Order ID:</b> <?php echo htmlspecialchars($order['id']); ?><br>
+<b>Order Date:</b> <?php echo htmlspecialchars($order['order_date']); ?><br><br>
 
-<b>Customer Name:</b> <?php echo $order['name']; ?><br>
-<b>Email:</b> <?php echo $order['email']; ?><br>
-<b>Phone:</b> <?php echo $order['phone']; ?><br>
-<b>Address:</b> <?php echo $order['address']; ?><br>
+<b>Customer Name:</b> <?php echo htmlspecialchars($order['name']); ?><br>
+<b>Email:</b> <?php echo htmlspecialchars($order['email']); ?><br>
+<b>Phone:</b> <?php echo htmlspecialchars($order['phone']); ?><br>
+<b>Address:</b> <?php echo htmlspecialchars($order['address']); ?><br>
 
 <table>
+
 <tr>
 <th>Product</th>
 <th>Price (₹)</th>
@@ -101,16 +124,23 @@ th,td{
 
 <?php
 $grand_total = 0;
-while($row=mysqli_fetch_assoc($item_q)){
-    $total = $row['price'] * $row['quantity'];
-    $grand_total += $total;
+
+while($row = mysqli_fetch_assoc($item_q)){
+
+    $price = $row['price'];
+    $qty = $row['quantity'];
+    $total = $price * $qty;
+
+    $grand_total = $grand_total + $total;
 ?>
+
 <tr>
-<td><?php echo $row['product_name']; ?></td>
-<td><?php echo number_format($row['price'],2); ?></td>
-<td><?php echo $row['quantity']; ?></td>
+<td><?php echo htmlspecialchars($row['product_name']); ?></td>
+<td><?php echo number_format($price,2); ?></td>
+<td><?php echo $qty; ?></td>
 <td><?php echo number_format($total,2); ?></td>
 </tr>
+
 <?php } ?>
 
 <tr>

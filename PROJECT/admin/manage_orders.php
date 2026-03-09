@@ -103,6 +103,7 @@ td{
     <th>Total (₹)</th>
     <th>Date</th>
     <th>Action</th>
+    <th>Status</th>
 </tr>
 
 <?php while($row = mysqli_fetch_assoc($query)){ ?>
@@ -118,6 +119,15 @@ td{
 
     <!-- ✅ FIXED -->
     <td><?php echo $row['order_date']; ?></td>
+    <td>
+<?php
+if($row['status']=="Cancelled"){
+    echo "User Cancelled This Order";
+}else{
+    echo "-";
+}
+?>
+</td>
 
   <td class="action-cell">
 
