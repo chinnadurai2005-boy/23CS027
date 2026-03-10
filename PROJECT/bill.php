@@ -156,6 +156,9 @@ while($row = mysqli_fetch_assoc($item_q)){
 <div class="print-btn">
 <button onclick="window.print()">Print Bill</button>
 </div>
+<a href="payment.php?order_id=<?php echo $order_id; ?>">
+<button>Pay Now</button>
+</a>
 
 </div>
 

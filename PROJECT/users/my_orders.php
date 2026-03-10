@@ -184,26 +184,30 @@ table{
 <td><?php echo $row['status']; ?></td>
 <td>
 <?php
-if(isset($row['status']) && $row['status'] == 'Pending'){
+
+$status = isset($row['status']) ? $row['status'] : '';
+
+if($status == 'Pending'){
 ?>
 
-<a href="cancel_order.php?order_id=<?php echo (int)$row['id']; ?>"
+<a href="cancel_order.php?order_id=<?php echo intval($row['id']); ?>"
 onclick="return confirm('Are you sure you want to cancel this order?');"
 style="color:red;font-weight:bold;">
 Cancel Order
 </a>
 
 <?php
-}else{
+}
+else{
 
-    if($row['status'] == 'Cancelled'){
+    if($status == 'Cancelled'){
         echo "<span style='color:red;'>Cancelled</span>";
     }
-    else if($row['status'] == 'Confirmed'){
+    else if($status == 'Confirmed'){
         echo "<span style='color:lime;'>Confirmed</span>";
     }
     else{
-        echo htmlspecialchars($row['status']);
+        echo htmlspecialchars($status);
     }
 
 }
