@@ -7,8 +7,8 @@
 
 session_start();
 include("../includes/db_connect.php");
-/*
-if(!isset($_SESSION['admin'])){
+
+if(!isset($_SESSION['admin_id'])){
     header("Location: admin_login.php");
     exit();
 }
